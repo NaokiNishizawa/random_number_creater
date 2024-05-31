@@ -4,6 +4,7 @@ import 'package:src/core/isar/isar_database_manager.dart';
 import 'package:src/presentation/home/home_screen.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await IsarDatabaseManager.instance();
   runApp(const ProviderScope(child: MyApp()));
 }

@@ -55,7 +55,7 @@ class _Content extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final startNumberController = TextEditingController(text: '0');
-    final endNumberController = TextEditingController(text: '15');
+    final endNumberController = TextEditingController(text: '21');
     final vm = ref.read(homeScreenViewModelProvider.notifier);
     final number = useState(0);
     return Column(
@@ -76,29 +76,35 @@ class _Content extends HookConsumerWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              TextField(
-                controller: startNumberController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: '開始値',
+              SizedBox(
+                width: 100,
+                child: TextField(
+                  controller: startNumberController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: '開始値',
+                  ),
+                  keyboardType: TextInputType.number,
                 ),
-                keyboardType: TextInputType.number,
               ),
               const Gap(10),
               const Text('から'),
               const Gap(10),
-              TextField(
-                controller: endNumberController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: '終了値',
+              SizedBox(
+                width: 100,
+                child: TextField(
+                  controller: endNumberController,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: '終了値',
+                  ),
+                  keyboardType: TextInputType.number,
                 ),
-                keyboardType: TextInputType.number,
               ),
             ],
           ),
         ),
-        const Spacer(),
+        const Gap(50),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -107,13 +113,17 @@ class _Content extends HookConsumerWidget {
                 // TODO: すべてのデータを削除処理
               },
               style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.redAccent,
+                backgroundColor: Colors.redAccent,
+                minimumSize: const Size(
+                  150,
+                  50,
+                ),
               ),
               child: const Text(
                 '全てのデータを削除',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.black,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -134,11 +144,17 @@ class _Content extends HookConsumerWidget {
                   return;
                 }
               },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(
+                  150,
+                  50,
+                ),
+              ),
               child: const Text(
                 '生成',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
             ),
