@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:src/core/router/router_info.dart';
 import 'package:src/extenstion/context_extenstion.dart';
 import 'package:src/presentation/home/home_screen_view_model.dart';
 import 'package:src/presentation/home/widgets/home_context_menu_button.dart';
@@ -19,7 +21,17 @@ class HomeScreen extends HookWidget {
         title: const Text('乱数生成アプリ'),
         actions: [
           HomeContextMenuButton(
-              onTappedIgnoreNumber: () {}, onTappedCurrentStatus: () {}),
+            onTappedIgnoreNumber: () {
+              context.push(
+                RouterInfo.ignoreNumbers.path,
+              );
+            },
+            onTappedCurrentStatus: () {
+              context.push(
+                RouterInfo.currentStatus.path,
+              );
+            },
+          ),
         ],
       ),
       body: SafeArea(
@@ -91,6 +103,17 @@ class _Content extends HookConsumerWidget {
                     labelText: '開始値',
                   ),
                   keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    if (value.isEmpty) {
+                      return;
+                    }
+                    final current = int.parse(value);
+                    if (current < 1) {
+                      context.showSnackBar('1以上の数字を入力してください');
+                      startNumberController.text = '1';
+                    }
+                    startNumberController.text = value;
+                  },
                 ),
               ),
               const Gap(10),
@@ -105,6 +128,17 @@ class _Content extends HookConsumerWidget {
                     labelText: '終了値',
                   ),
                   keyboardType: TextInputType.number,
+                  onChanged: (value) {
+                    if (value.isEmpty) {
+                      return;
+                    }
+                    final current = int.parse(value);
+                    if (current < 1) {
+                      context.showSnackBar('1以上の数字を入力してください');
+                      endNumberController.text = '21';
+                    }
+                    endNumberController.text = value;
+                  },
                 ),
               ),
             ],

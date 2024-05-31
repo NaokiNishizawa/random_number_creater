@@ -42,7 +42,8 @@ class RandomNumberLogic {
   Future<void> cleanCache() async {
     final db = await IsarDatabaseManager.instance();
     try {
-      final info = await db.isar?.randomNumbers.get(0); // このクラスは1つしか発生しないため、固定でidに0を指定
+      final info =
+          await db.isar?.randomNumbers.get(0); // このクラスは1つしか発生しないため、固定でidに0を指定
       if (info == null) {
         return;
       }
@@ -54,6 +55,68 @@ class RandomNumberLogic {
       await db.isar?.writeTxn(() async {
         await db.isar?.randomNumbers.put(newInfo);
       });
+    } catch (e) {
+      return;
+    }
+  }
+
+  Future<List<int>> fetchIgnoreNumberList() async {
+    final db = await IsarDatabaseManager.instance();
+    try {
+      final result = <int>[];
+      final info = await db.isar?.randomNumbers.get(0);
+      if (info == null) {
+        return result;
+      }
+
+      result.addAll(info.ignoreNumberList);
+      return result;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<void> addIgnoreNumber(int newValue) async {
+    final db = await IsarDatabaseManager.instance();
+    try {
+      final info = await db.isar?.randomNumbers.get(0);
+      RandomNumber? newInfo;
+      if (info != null) {
+        final ignoreNumberList = <int>[];
+        ignoreNumberList.addAll(info.ignoreNumberList);
+        ignoreNumberList.add(newValue);
+        newInfo = info.copyWith(
+          cacheNumberList: info.cacheNumberList,
+          ignoreNumberList: ignoreNumberList,
+        );
+
+        await db.isar?.writeTxn(() async {
+          await db.isar?.randomNumbers.put(newInfo!);
+        });
+      }
+    } catch (e) {
+      return;
+    }
+  }
+
+  Future<void> removeIgnoreNumber(int value) async {
+    final db = await IsarDatabaseManager.instance();
+    try {
+      final info = await db.isar?.randomNumbers.get(0);
+      RandomNumber? newInfo;
+      if (info != null) {
+        final ignoreNumberList = <int>[];
+        ignoreNumberList.addAll(info.ignoreNumberList);
+        ignoreNumberList.remove(value);
+        newInfo = info.copyWith(
+          cacheNumberList: info.cacheNumberList,
+          ignoreNumberList: ignoreNumberList,
+        );
+
+        await db.isar?.writeTxn(() async {
+          await db.isar?.randomNumbers.put(newInfo!);
+        });
+      }
     } catch (e) {
       return;
     }
