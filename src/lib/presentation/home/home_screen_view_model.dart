@@ -14,6 +14,9 @@ class HomeScreenViewModel extends _$HomeScreenViewModel {
   }
 
   Future<int?> generateRandomNumber(int start , int end) async {
+    // 画面のローディングが認識できるようににあえて1秒待つ
+    await Future.delayed(const Duration(seconds: 1));
+
     final logic = ref.read(randomNumberLogicProvider);
     return logic.generateRandomNumber(start, end);
   }
