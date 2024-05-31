@@ -19,7 +19,7 @@ class RandomNumberLogic {
   final Ref ref;
 
   Future<int?> generateRandomNumber(int start, int end) async {
-    final cacheNumberList = await _getCacheNumberList();
+    final cacheNumberList = await getCacheNumberList();
     if (cacheNumberList == null) {
       return null;
     }
@@ -191,7 +191,7 @@ class RandomNumberLogic {
     }
   }
 
-  Future<List<int>?> _getCacheNumberList() async {
+  Future<List<int>?> getCacheNumberList() async {
     final db = await IsarDatabaseManager.instance();
     try {
       final result = <int>[]; // ここにキャッシュされた乱数を格納
