@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:src/extenstion/context_extenstion.dart';
 
-class AddIgnoreNumberBottomSheet extends StatelessWidget {
+class AddIgnoreNumberBottomSheet extends HookWidget {
   const AddIgnoreNumberBottomSheet({
     super.key,
     required this.onAddIgnoreNumber,
@@ -12,7 +13,7 @@ class AddIgnoreNumberBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final numberController = TextEditingController(text: '1');
+    final number = useState(1);
     return Container(
       height: 400,
       width: double.infinity,
@@ -24,22 +25,21 @@ class AddIgnoreNumberBottomSheet extends StatelessWidget {
           SizedBox(
             width: 200,
             child: TextField(
-              controller: numberController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: '非表示番号',
               ),
               keyboardType: TextInputType.number,
-              onChanged: (value) {
-                if (value.isEmpty) {
+              onChanged: (newValue) {
+                if (newValue.isEmpty) {
                   return;
                 }
-                final current = int.parse(value);
+                final current = int.parse(newValue);
                 if (current < 1) {
                   context.showSnackBar('1以上の数字を入力してください');
-                  numberController.text = '1';
+                  number.value = 1;
                 }
-                numberController.text = value;
+                number.value = current;
               },
             ),
           ),
@@ -47,8 +47,7 @@ class AddIgnoreNumberBottomSheet extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               try {
-                final current = int.parse(numberController.text);
-                onAddIgnoreNumber(current);
+                onAddIgnoreNumber(number.value);
                 Navigator.of(context).pop();
               } catch (e) {
                 context.showSnackBar('数字を入力してください');

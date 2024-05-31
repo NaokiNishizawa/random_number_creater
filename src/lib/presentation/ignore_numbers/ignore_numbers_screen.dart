@@ -68,6 +68,12 @@ class IgnoreNumbersScreen extends HookConsumerWidget {
               ignoreNumberList.value.isNotEmpty
                   ? _Content(
                       ignoreNumberList: ignoreNumberList,
+                      onRemoved: (value) async {
+                        final viewModel =
+                            ref.read(ignoreNumbersViewModelProvider.notifier);
+                        await viewModel.removeIgnoreNumber(value);
+                        await fetchIgnoreNumberList();
+                      },
                     )
                   : const Center(
                       child: Text('非表示番号はありません。'),
@@ -92,22 +98,37 @@ class IgnoreNumbersScreen extends HookConsumerWidget {
 class _Content extends StatelessWidget {
   const _Content({
     required this.ignoreNumberList,
+    required this.onRemoved,
   });
 
   final ValueNotifier<List<int>> ignoreNumberList;
+  final void Function(int) onRemoved;
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      shrinkWrap: true,
-      itemCount: ignoreNumberList.value.length,
-      separatorBuilder: (context, index) => const Divider(),
-      itemBuilder: (context, index) {
-        final ignoreNumber = ignoreNumberList.value[index];
-        return ListTile(
-          title: Text(ignoreNumber.toString()),
-        );
-      },
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        20,
+        0,
+        20,
+        0,
+      ),
+      child: ListView.separated(
+        shrinkWrap: true,
+        itemCount: ignoreNumberList.value.length,
+        separatorBuilder: (context, index) => const Divider(),
+        itemBuilder: (context, index) {
+          final ignoreNumber = ignoreNumberList.value[index];
+          return ListTile(
+              title: Text(ignoreNumber.toString()),
+              trailing: IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () {
+                  onRemoved(ignoreNumber);
+                },
+              ));
+        },
+      ),
     );
   }
 }
