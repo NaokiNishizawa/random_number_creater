@@ -4,6 +4,7 @@ import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:src/extenstion/context_extenstion.dart';
 import 'package:src/presentation/home/home_screen_view_model.dart';
+import 'package:src/presentation/home/widgets/home_context_menu_button.dart';
 
 class HomeScreen extends HookWidget {
   const HomeScreen({
@@ -16,6 +17,10 @@ class HomeScreen extends HookWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('乱数生成アプリ'),
+        actions: [
+          HomeContextMenuButton(
+              onTappedIgnoreNumber: () {}, onTappedCurrentStatus: () {}),
+        ],
       ),
       body: SafeArea(
         child: Stack(
@@ -110,9 +115,9 @@ class _Content extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () async{
+              onPressed: () async {
                 await vm.cleanCache();
-                if(context.mounted){
+                if (context.mounted) {
                   context.showSnackBar('全てのデータを削除しました。');
                 }
               },
