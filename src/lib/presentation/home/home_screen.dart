@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:path/path.dart';
+import 'package:src/extenstion/context_extenstion.dart';
 import 'package:src/presentation/home/home_screen_view_model.dart';
 
 class HomeScreen extends HookWidget {
@@ -109,8 +111,11 @@ class _Content extends HookConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () {
-                // TODO: すべてのデータを削除処理
+              onPressed: () async{
+                await vm.cleanCache();
+                if(context.mounted){
+                  context.showSnackBar('全てのデータを削除しました。');
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
@@ -139,12 +144,16 @@ class _Content extends HookConsumerWidget {
                   );
 
                   if (generatedNumber == null) {
-                    // TODO: エラーの表示
+                    if (context.mounted) {
+                      context.showSnackBar('上限に達しました。一度データを削除してください。');
+                    }
                   } else {
                     number.value = generatedNumber;
                   }
                 } catch (e) {
-                  // nothing to do
+                  if (context.mounted) {
+                    context.showSnackBar('数値の範囲が不正です。');
+                  }
                 }
                 onCompleted();
               },

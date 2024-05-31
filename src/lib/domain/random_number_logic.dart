@@ -39,6 +39,26 @@ class RandomNumberLogic {
     } while (true);
   }
 
+  Future<void> cleanCache() async {
+    final db = await IsarDatabaseManager.instance();
+    try {
+      final info = await db.isar?.randomNumbers.get(0); // このクラスは1つしか発生しないため、固定でidに0を指定
+      if (info == null) {
+        return;
+      }
+
+      final newInfo = info.copyWith(
+        cacheNumberList: [],
+      );
+
+      await db.isar?.writeTxn(() async {
+        await db.isar?.randomNumbers.put(newInfo);
+      });
+    } catch (e) {
+      return;
+    }
+  }
+
   Future<List<int>?> _getCacheNumberList() async {
     final db = await IsarDatabaseManager.instance();
     try {
@@ -72,7 +92,6 @@ class RandomNumberLogic {
           await db.isar?.randomNumbers.get(0); // このクラスは1つしか発生しないため、固定でidに0を指定
       RandomNumber? newInfo;
       if (info != null) {
-
         final cacheNumberList = <int>[];
         cacheNumberList.addAll(info.cacheNumberList);
         cacheNumberList.add(number);

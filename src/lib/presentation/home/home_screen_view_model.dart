@@ -19,6 +19,7 @@ class HomeScreenViewModel extends _$HomeScreenViewModel {
   }
 
   Future<void> cleanCache() async {
-    // TODO: キャッシュのクリア処理を実装
+    final logic = ref.read(randomNumberLogicProvider);
+    await logic.cleanCache();
   }
 }
