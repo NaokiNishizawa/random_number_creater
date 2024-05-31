@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:src/domain/random_number_logic.dart';
 
 part 'home_screen_view_model.g.dart';
 
@@ -12,9 +13,9 @@ class HomeScreenViewModel extends _$HomeScreenViewModel {
     return 0;
   }
 
-  int generateRandomNumber(int start , int end) {
-    final random = Random().nextInt((end +1) - start);
-    return random + start;
+  Future<int?> generateRandomNumber(int start , int end) async {
+    final logic = ref.read(randomNumberLogicProvider);
+    return logic.generateRandomNumber(start, end);
   }
 
   Future<void> cleanCache() async {

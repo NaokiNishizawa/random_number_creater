@@ -54,7 +54,7 @@ class _Content extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final startNumberController = TextEditingController(text: '0');
+    final startNumberController = TextEditingController(text: '1');
     final endNumberController = TextEditingController(text: '21');
     final vm = ref.read(homeScreenViewModelProvider.notifier);
     final number = useState(0);
@@ -128,21 +128,25 @@ class _Content extends HookConsumerWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 onGenerating();
                 try {
                   final start = int.parse(startNumberController.text);
                   final end = int.parse(endNumberController.text);
-                  final generatedNumber = vm.generateRandomNumber(
+                  final generatedNumber = await vm.generateRandomNumber(
                     start,
                     end,
                   );
-                  number.value = generatedNumber;
-                  onCompleted();
+
+                  if (generatedNumber == null) {
+                    // TODO: エラーの表示
+                  } else {
+                    number.value = generatedNumber;
+                  }
                 } catch (e) {
-                  onCompleted();
-                  return;
+                  // nothing to do
                 }
+                onCompleted();
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(
