@@ -4,9 +4,11 @@ import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:src/core/router/router_info.dart';
+import 'package:src/data/random_number.dart';
 import 'package:src/extenstion/context_extenstion.dart';
 import 'package:src/presentation/home/home_screen_view_model.dart';
 import 'package:src/presentation/home/widgets/home_context_menu_button.dart';
+import 'package:src/utils/consts.dart';
 
 class HomeScreen extends HookWidget {
   const HomeScreen({
@@ -72,15 +74,34 @@ class _Content extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final startNumberController = TextEditingController(text: '1');
-    final endNumberController = TextEditingController(text: '21');
+    final startNumberController = useTextEditingController();
+    final endNumberController = useTextEditingController();
     final vm = ref.read(homeScreenViewModelProvider.notifier);
-    final number = useState(0);
+    final randomNumber = useState<RandomNumber?>(null);
+    final resultNumber = useState(0);
+
+    Future<void> fetch() async {
+      randomNumber.value = await vm.fetchRandomNumber();
+      startNumberController.text =
+          randomNumber.value?.start.toString() ?? Consts.start.toString();
+      endNumberController.text =
+          randomNumber.value?.end.toString() ?? Consts.end.toString();
+    }
+
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.microtask(() async {
+          await fetch();
+        });
+      });
+      return null;
+    }, const []);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          number.value.toString(),
+          resultNumber.value.toString(),
           style: const TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.bold,
@@ -103,16 +124,16 @@ class _Content extends HookConsumerWidget {
                     labelText: '開始値',
                   ),
                   keyboardType: TextInputType.number,
-                  onChanged: (value) {
+                  onChanged: (value) async {
                     if (value.isEmpty) {
                       return;
                     }
                     final current = int.parse(value);
                     if (current < 1) {
                       context.showSnackBar('1以上の数字を入力してください');
-                      startNumberController.text = '1';
                     }
-                    startNumberController.text = value;
+                    await vm.changeStartNumber(current);
+                    await fetch();
                   },
                 ),
               ),
@@ -128,16 +149,16 @@ class _Content extends HookConsumerWidget {
                     labelText: '終了値',
                   ),
                   keyboardType: TextInputType.number,
-                  onChanged: (value) {
+                  onChanged: (value) async {
                     if (value.isEmpty) {
                       return;
                     }
                     final current = int.parse(value);
                     if (current < 1) {
                       context.showSnackBar('1以上の数字を入力してください');
-                      endNumberController.text = '21';
                     }
-                    endNumberController.text = value;
+                    await vm.changeEndNumber(current);
+                    await fetch();
                   },
                 ),
               ),
@@ -174,8 +195,8 @@ class _Content extends HookConsumerWidget {
               onPressed: () async {
                 onGenerating();
                 try {
-                  final start = int.parse(startNumberController.text);
-                  final end = int.parse(endNumberController.text);
+                  final start = randomNumber.value?.start ?? Consts.start;
+                  final end = randomNumber.value?.end ?? Consts.end;
                   final generatedNumber = await vm.generateRandomNumber(
                     start,
                     end,
@@ -186,7 +207,7 @@ class _Content extends HookConsumerWidget {
                       context.showSnackBar('上限に達しました。一度データを削除してください。');
                     }
                   } else {
-                    number.value = generatedNumber;
+                    resultNumber.value = generatedNumber;
                   }
                 } catch (e) {
                   if (context.mounted) {

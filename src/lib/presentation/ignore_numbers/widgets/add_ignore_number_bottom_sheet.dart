@@ -15,7 +15,7 @@ class AddIgnoreNumberBottomSheet extends HookWidget {
   Widget build(BuildContext context) {
     final number = useState(1);
     return Container(
-      height: 400,
+      height: 300,
       width: double.infinity,
       color: Colors.white,
       child: Column(

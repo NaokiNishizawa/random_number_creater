@@ -11,6 +11,8 @@ class RandomNumber with _$RandomNumber {
 
   const factory RandomNumber({
     required int id,
+    required int start,
+    required int end,
     required List<int> cacheNumberList,
     required List<int> ignoreNumberList,
   }) = _RandomNumber;

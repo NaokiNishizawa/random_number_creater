@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:src/core/isar/isar_database_manager.dart';
 import 'package:src/data/random_number.dart';
+import 'package:src/utils/consts.dart';
 
 part 'random_number_logic.g.dart';
 
@@ -37,6 +38,74 @@ class RandomNumberLogic {
         return current;
       }
     } while (true);
+  }
+
+  Future<RandomNumber> fetchRandomNumber() async {
+    final db = await IsarDatabaseManager.instance();
+    try {
+      final info = await db.isar?.randomNumbers.get(0); // このクラスは1つしか発生しないため、固定でidに0を指定
+      if (info == null) {
+        RandomNumber newInfo = const RandomNumber(
+          id: 0,
+          start: Consts.start,
+          end: Consts.end,
+          cacheNumberList: [],
+          ignoreNumberList: [],
+        );
+        await db.isar?.writeTxn(() async {
+          await db.isar?.randomNumbers.put(newInfo);
+        });
+        return newInfo;
+      }
+
+      return info;
+    } catch (e) {
+      return const RandomNumber(
+        id: 0,
+        start: Consts.start,
+        end: Consts.end,
+        cacheNumberList: [],
+        ignoreNumberList: [],
+      );
+    }
+  }
+
+  Future<void> changeStart(int start) async {
+    final db = await IsarDatabaseManager.instance();
+    try {
+      final info = await db.isar?.randomNumbers.get(0);
+      RandomNumber? newInfo;
+      if (info != null) {
+        newInfo = info.copyWith(
+          start: start,
+        );
+
+        await db.isar?.writeTxn(() async {
+          await db.isar?.randomNumbers.put(newInfo!);
+        });
+      }
+    } catch (e) {
+      return;
+    }
+  }
+
+  Future<void> changeEnd(int end) async {
+    final db = await IsarDatabaseManager.instance();
+    try {
+      final info = await db.isar?.randomNumbers.get(0);
+      RandomNumber? newInfo;
+      if (info != null) {
+        newInfo = info.copyWith(
+          end: end,
+        );
+
+        await db.isar?.writeTxn(() async {
+          await db.isar?.randomNumbers.put(newInfo!);
+        });
+      }
+    } catch (e) {
+      return;
+    }
   }
 
   Future<void> cleanCache() async {
@@ -131,6 +200,8 @@ class RandomNumberLogic {
       if (info == null) {
         RandomNumber newInfo = const RandomNumber(
           id: 0,
+          start: Consts.start,
+          end: Consts.end,
           cacheNumberList: [],
           ignoreNumberList: [],
         );
