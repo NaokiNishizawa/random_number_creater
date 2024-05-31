@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:src/core/isar/isar_database_manager.dart';
 import 'package:src/presentation/home/home_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  await IsarDatabaseManager.instance();
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
